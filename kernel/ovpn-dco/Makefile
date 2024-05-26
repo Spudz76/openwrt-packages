@@ -28,8 +28,24 @@ define KernelPackage/ovpn-dco-v2
   SUBMENU:=Network Support
   TITLE:=OpenVPN data channel offload
   DEPENDS:= \
-	+kmod-udptunnel4 +IPV6:kmod-udptunnel6 \
-	+kmod-crypto-chacha20poly1305 +kmod-crypto-lib-chacha20 +kmod-crypto-lib-poly1305
+	  +kmod-crypto-aead \
+	  +kmod-crypto-chacha20poly1305 \
+	  +kmod-crypto-lib-chacha20 \
+	  +kmod-crypto-lib-chacha20poly1305 \
+	  +kmod-crypto-lib-curve25519 \
+	  +kmod-crypto-lib-poly1305 \
+	  +kmod-iptunnel \
+	  +kmod-udptunnel4 \
+	  +IPV6:kmod-udptunnel6
+  KCONFIG:= \
+	  CONFIG_NET_IP_TUNNEL=m \
+	  CONFIG_NET_UDP_TUNNEL=m \
+	  CONFIG_CRYPTO_LIB_CURVE25519=m \
+	  CONFIG_CRYPTO_LIB_CHACHA20POLY1305=m \
+	  CONFIG_CRYPTO_POLY1305_MIPS=m \
+	  CONFIG_CRYPTO_CHACHA_MIPS=m \
+	  CONFIG_CRYPTO_ARCH_HAVE_LIB_CHACHA=m \
+	  CONFIG_CRYPTO_ARCH_HAVE_LIB_POLY1305=m
   FILES:=$(PKG_BUILD_DIR)/drivers/net/ovpn-dco/ovpn-dco-v2.ko
   AUTOLOAD:=$(call AutoLoad,30,ovpn-dco-v2)
 endef
@@ -47,6 +63,19 @@ NOSTDINC_FLAGS += \
 
 EXTRA_KCONFIG:= \
 	CONFIG_OVPN_DCO_V2=m
+
+#	CONFIG_CRYPTO_CHACHA20_X86_64 if X86 && 64BIT=m \
+#	CONFIG_CRYPTO_POLY1305_X86_64 if X86 && 64BIT=m \
+#	CONFIG_CRYPTO_BLAKE2S_X86 if X86 && 64BIT=m \
+#	CONFIG_CRYPTO_CURVE25519_X86 if X86 && 64BIT=m \
+#	CONFIG_CRYPTO_CHACHA20_NEON if ARM || (ARM64 && KERNEL_MODE_NEON)=m \
+#	CONFIG_CRYPTO_POLY1305_NEON if ARM64 && KERNEL_MODE_NEON=m \
+#	CONFIG_CRYPTO_POLY1305_ARM if ARM=m \
+#	CONFIG_CRYPTO_BLAKE2S_ARM if ARM=m \
+#	CONFIG_CRYPTO_CURVE25519_NEON if ARM && KERNEL_MODE_NEON=m \
+#	CONFIG_CRYPTO_CHACHA_MIPS if CPU_MIPS32_R2=m \
+#	CONFIG_CRYPTO_POLY1305_MIPS if MIPS=m \
+#	CONFIG_CRYPTO_CHACHA_S390 if S390=m \
 
 PKG_EXTMOD_SUBDIRS = drivers/net/ovpn-dco
 
